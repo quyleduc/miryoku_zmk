@@ -1,7 +1,7 @@
 # Copyright 2022 Manna Harbour
 # https://github.com/manna-harbour/miryoku
 
-name: 'Build Example corne nice_nano display'
+name: 'Build corne nice-nano_v2 OLED'
 on: workflow_dispatch
 jobs:
   build:
