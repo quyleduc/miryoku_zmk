@@ -9,5 +9,6 @@ jobs:
     secrets: inherit
     with:
       board: '["nice_nano"]'
-      shield: '["corne_left","corne_right"]'
-      kconfig: '["CONFIG_ZMK_DISPLAY=y"]'
+      shield: '["corne_left","corne_right", "settings_reset"]'
+      alphas: '["QWERTY"]'
+      kconfig: '["CONFIG_BT_CTLR_TX_PWR_PLUS_8=y/vCONFIG_ZMK_DISPLAY=y\nONFIG_ZMK_WIDGET_BATTERY_STATUS_SHOW_PERCENTAGE=y\nCONFIG_ZMK_SLEEP=y CONFIG_ZMK_IDLE_TIMEOUT=900000"]'
