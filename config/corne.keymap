@@ -1,6 +1,27 @@
-// Copyright 2021 Manna Harbour
-// https://github.com/manna-harbour/miryoku
 
 #include "../miryoku/custom_config.h"
 #include "../miryoku/mapping/42/corne.h"
 #include "../miryoku/miryoku.dtsi"
+
+/* ======================================
+ * Corne 3x5 - Responsiveness Optimization
+ * ====================================== */
+
+/* Home Row Modifiers */
+&u_mt {
+    tapping-term-ms = <200>;
+    flavor = "tap-preferred";
+    require-prior-idle-ms = <100>;
+};
+
+/* Thumb Layer-Tap: TAB, SPACE, ESC... */
+&u_lt {
+    tapping-term-ms = <180>;
+    flavor = "hold-preferred";
+};
+
+/* Key Matrix Debounce */
+&kscan0 {
+    debounce-press-ms = <1>;
+    debounce-release-ms = <5>;
+};

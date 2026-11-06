@@ -1,17 +1,18 @@
-# Copyright 2022 Manna Harbour
-# https://github.com/manna-harbour/miryoku
 
-name: 'Build Example corne nice_nano display'
-on: workflow_dispatch
+name: 'Build Corne 3x5 Optimized'
+
+on:
+  workflow_dispatch:
+
 jobs:
   build:
     uses: ./.github/workflows/main.yml
     secrets: inherit
     with:
       board: '["nice_nano@2.0.0"]'
-      shield: '["corne_left","corne_right", "settings_reset"]'
+      shield: '["corne_left","corne_right"]'
       alphas: '["qwerty"]'
+      clipboard: '["win"]'
+      tap: '["qwerty"]'
+      extra: '["qwerty"]'
       kconfig: '["CONFIG_ZMK_DISPLAY=y\nCONFIG_BT_CTLR_TX_PWR_PLUS_8=y"]'
-      clipboard: '["win"]'    # Options: default, mac, win
-      tap: '["qwerty"]'          # Alternative alphas for Tap layer
-      extra: '["qwerty"]'        # Alternative alphas for Extra layer
