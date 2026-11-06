@@ -9,7 +9,7 @@ jobs:
     uses: ./.github/workflows/main.yml
     secrets: inherit
     with:
-      board: '["nice_nano@2.0.0"]'
+      board: '["nice_nano@2.0.0//zmk"]'
       shield: '["corne_left","corne_right"]'
       alphas: '["qwerty"]'
       clipboard: '["win"]'
