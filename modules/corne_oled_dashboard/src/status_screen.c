@@ -25,6 +25,20 @@
 #define ROW_TOP 1
 #define ROW_BOTTOM 17
 
+/* The photographed SSD1306 panel renders the previous logical black as
+ * illuminated pixels. Swap logical monochrome colors as a board-local,
+ * reversible workaround. If another OLED has normal polarity, set 0.
+ */
+#define CORNE_OLED_SWAP_MONO_PIXELS 1
+#if CORNE_OLED_SWAP_MONO_PIXELS
+#define OLED_BG_COLOR lv_color_white()
+#define OLED_FG_COLOR lv_color_black()
+#else
+#define OLED_BG_COLOR lv_color_black()
+#define OLED_FG_COLOR lv_color_white()
+#endif
+
+
 static struct zmk_widget_battery_status battery_widget;
 
 #if IS_ENABLED(CONFIG_ZMK_SPLIT_ROLE_CENTRAL)
@@ -37,7 +51,7 @@ static struct zmk_widget_peripheral_status peripheral_widget;
 
 static void place_label(lv_obj_t *label, int16_t x, int16_t y) {
     lv_obj_set_style_text_font(label, &lv_font_montserrat_12, LV_PART_MAIN);
-    lv_obj_set_style_text_color(label, lv_color_white(), LV_PART_MAIN);
+    lv_obj_set_style_text_color(label, OLED_FG_COLOR, LV_PART_MAIN);
     lv_obj_set_pos(label, x, y);
 }
 
@@ -52,7 +66,7 @@ lv_obj_t *zmk_display_status_screen(void) {
     lv_obj_t *screen = lv_obj_create(NULL);
     lv_obj_remove_style_all(screen);
     lv_obj_set_size(screen, SCREEN_WIDTH, SCREEN_HEIGHT);
-    lv_obj_set_style_bg_color(screen, lv_color_black(), LV_PART_MAIN);
+    lv_obj_set_style_bg_color(screen, OLED_BG_COLOR, LV_PART_MAIN);
     lv_obj_set_style_bg_opa(screen, LV_OPA_COVER, LV_PART_MAIN);
     lv_obj_clear_flag(screen, LV_OBJ_FLAG_SCROLLABLE);
 
@@ -66,7 +80,7 @@ lv_obj_t *zmk_display_status_screen(void) {
     /* Small battery font keeps charging icon + 100% inside 128px. */
     lv_obj_t *battery_label = zmk_widget_battery_status_obj(&battery_widget);
     lv_obj_set_style_text_font(battery_label, &lv_font_montserrat_8, LV_PART_MAIN);
-    lv_obj_set_style_text_color(battery_label, lv_color_white(), LV_PART_MAIN);
+    lv_obj_set_style_text_color(battery_label, OLED_FG_COLOR, LV_PART_MAIN);
     lv_obj_set_pos(battery_label, 92, ROW_TOP + 3);
 
 #if IS_ENABLED(CONFIG_ZMK_SPLIT_ROLE_CENTRAL)
