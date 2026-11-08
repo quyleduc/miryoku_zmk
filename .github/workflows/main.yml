@@ -44,6 +44,9 @@ on:
       modules:
         type: string
         default: '["default"]'
+      zmk_sha:
+        type: string
+        default: ''
   
 
 jobs:
@@ -244,6 +247,16 @@ jobs:
           repo=`echo "$zmk" | cut -f 2 -d '/'`
           branch=`echo "$zmk" | cut -f 3- -d '/'`
           git clone -b "$branch" --depth 1 "https://github.com/$user/$repo.git" 'zmk'
+          if [ -n "${{ inputs.zmk_sha }}" ]
+          then
+            cd "${GITHUB_WORKSPACE}/zmk"
+            git fetch --depth 1 origin "${{ inputs.zmk_sha }}"
+            git checkout --detach "${{ inputs.zmk_sha }}"
+            test "$(git rev-parse HEAD)" = "${{ inputs.zmk_sha }}"
+            cd "${GITHUB_WORKSPACE}"
+          fi
+          mkdir -p "${{ steps.main.outputs.artifact_dir }}"
+          git -C zmk rev-parse HEAD > "${{ steps.main.outputs.artifact_dir }}/zmk-revision.txt"
           echo "::endgroup::"
 
           echo "::group::merge"
