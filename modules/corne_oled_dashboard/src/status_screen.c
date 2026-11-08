@@ -56,7 +56,11 @@ lv_obj_t *zmk_display_status_screen(void) {
     lv_obj_set_style_bg_opa(screen, LV_OPA_COVER, LV_PART_MAIN);
     lv_obj_clear_flag(screen, LV_OBJ_FLAG_SCROLLABLE);
 
+#if IS_ENABLED(CONFIG_ZMK_SPLIT_ROLE_CENTRAL)
     place_static(screen, "L", 0, ROW_TOP);
+#else
+    place_static(screen, "R", 0, ROW_TOP);
+#endif
 
     zmk_widget_battery_status_init(&battery_widget, screen);
     place_label(zmk_widget_battery_status_obj(&battery_widget), 89, ROW_TOP);
