@@ -87,6 +87,10 @@ jobs:
           then
             python3 "miryoku_zmk/tools/validate_corne_oled.py"
           fi
+          if [ -f "miryoku_zmk/tools/validate_corne_oled_anim.py" ]
+          then
+            python3 "miryoku_zmk/tools/validate_corne_oled_anim.py"
+          fi
       - name: main
         id: main
         run: |
