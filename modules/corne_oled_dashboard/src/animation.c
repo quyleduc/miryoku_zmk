@@ -250,7 +250,9 @@ void corne_oled_animation_init(lv_obj_t *screen) {
 #if IS_ENABLED(CONFIG_ZMK_SPLIT_ROLE_CENTRAL)
     LV_DRAW_BUF_INIT_STATIC(output_buffer);
     LV_DRAW_BUF_INIT_STATIC(typing_buffer);
-    output_canvas = make_canvas(screen, &output_buffer, 73, 3);
+    /* x=79 leaves space for the 34px LQE2HC label at x=44 and ends
+     * before the battery widget at x=92; preserve all existing animation. */
+    output_canvas = make_canvas(screen, &output_buffer, 79, 3);
     typing_canvas = make_canvas(screen, &typing_buffer, 89, 23);
     dash_anim_transport_init();
     dash_anim_typing_init();
