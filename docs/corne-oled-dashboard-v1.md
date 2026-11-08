@@ -44,7 +44,7 @@ RSSI, host connection, or mirrored layer.
   `battery/output/layer/wpm/peripheral` widgets on the proper split role.
 - `config/corne_left.conf`: central UI + existing Mouse.
 - `config/corne_right.conf`: peripheral battery and link status.
-- Monochrome 1-bit LVGL, 8 KB LVGL heap, font size 12,
+- Monochrome 1-bit LVGL, 8 KB LVGL heap, small LVGL transfer buffer (32), font size 12,
   100 ms display service tick and idle blanking.
 - `CONFIG_ZMK_DISPLAY_WORK_QUEUE_DEDICATED=y` on both halves to avoid
   serializing UI updates with unrelated system work on the default work queue.
@@ -52,7 +52,7 @@ RSSI, host connection, or mirrored layer.
 
 ## Build
 
-1. GitHub Actions → **Build Corne 3x5 Optimized** → **Run workflow**.
+1. Builds and both regression validators are also triggered automatically on pushes to this feature branch or a PR targeting the V2 branch. Alternatively, GitHub Actions → **Build Corne 3x5 Optimized** → **Run workflow**.
 2. Select branch `feature/corne-oled-dashboard-v1`.
 3. Verify that both `validate_corne_v21.py` and `validate_corne_oled.py`
    pass before the `west build` step.
