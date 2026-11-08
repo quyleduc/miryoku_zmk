@@ -46,6 +46,7 @@ def main() -> None:
         "ZMK_DISPLAY", "ZMK_DISPLAY_STATUS_SCREEN_CUSTOM",
         "ZMK_DISPLAY_WORK_QUEUE_DEDICATED", "ZMK_DISPLAY_BLANK_ON_IDLE",
         "LV_COLOR_DEPTH_1", "LV_FONT_MONTSERRAT_12",
+        "LV_USE_THEME_MONO", "ZMK_DISPLAY_INVERT",
     ]
     for side, conf in [("left", left), ("right", right)]:
         for flag in baseline:
@@ -91,6 +92,13 @@ def main() -> None:
            "Dashboard must not poll, delay or introduce new input listeners")
     verify("SCREEN_WIDTH 128" in code and "SCREEN_HEIGHT 32" in code,
            "Dashboard must target SSD1306 128x32")
+    verify("#define CORNE_OLED_SWAP_MONO_PIXELS 1" in code and
+           "#define OLED_BG_COLOR lv_color_white()" in code and
+           "#define OLED_FG_COLOR lv_color_black()" in code,
+           "Photographed OLED polarity workaround missing or modified")
+    verify("lv_obj_set_style_bg_color(screen, OLED_BG_COLOR" in code and
+           code.count("OLED_FG_COLOR, LV_PART_MAIN") >= 2,
+           "Background and widget text must use the same polarity setting")
 
     workflow = WORKFLOW.read_text()
     build = SHIELD_WORKFLOW.read_text()
