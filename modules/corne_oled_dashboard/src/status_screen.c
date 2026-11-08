@@ -3,12 +3,14 @@
  * ZMK pinned revision: 4dd95d7840eb3d5a3f59bb29fbf1ab054715ef85
  *
  * The existing ZMK widgets subscribe to input/endpoint/battery events.
- * There are no custom timers, screen-polling loops, or key handlers.
+ * The V1.1 sprite work is limited to 350ms and sleeps when OLED is idle.
+ * No per-key hooks and no changes to the keymap / HID path.
  * The central shows output, layer, battery, WPM.
  * The peripheral shows its OWN battery and its BLE link with central.
  */
 #include <zephyr/kernel.h>
 #include <lvgl.h>
+#include "animation.h"
 
 #include <zmk/display/status_screen.h>
 #include <zmk/display/widgets/battery_status.h>
@@ -96,8 +98,10 @@ lv_obj_t *zmk_display_status_screen(void) {
     /* Local peripheral status only; no fictional central layer/WPM data. */
     place_static(screen, "SPLIT", 0, ROW_BOTTOM);
     zmk_widget_peripheral_status_init(&peripheral_widget, screen);
-    place_label(zmk_widget_peripheral_status_obj(&peripheral_widget), 76, ROW_BOTTOM);
+    place_label(zmk_widget_peripheral_status_obj(&peripheral_widget), 69, ROW_BOTTOM);
 #endif
 
+    /* Tiny 1-bit canvases are drawn only on the display work queue. */
+    corne_oled_animation_init(screen);
     return screen;
 }
