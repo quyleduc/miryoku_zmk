@@ -44,6 +44,9 @@ on:
       modules:
         type: string
         default: '["default"]'
+      zmk_sha:
+        type: string
+        default: ''
   
 
 jobs:
@@ -74,6 +77,12 @@ jobs:
         uses: actions/checkout@v4
         with:
           path: 'miryoku_zmk'
+      - name: validate Corne V2.1 keymap
+        run: |
+          if [ -f "miryoku_zmk/tools/validate_corne_v21.py" ]
+          then
+            python3 "miryoku_zmk/tools/validate_corne_v21.py"
+          fi
       - name: main
         id: main
         run: |
@@ -244,6 +253,15 @@ jobs:
           repo=`echo "$zmk" | cut -f 2 -d '/'`
           branch=`echo "$zmk" | cut -f 3- -d '/'`
           git clone -b "$branch" --depth 1 "https://github.com/$user/$repo.git" 'zmk'
+          if [ -n "${{ inputs.zmk_sha }}" ]
+          then
+            cd "${GITHUB_WORKSPACE}/zmk"
+            git fetch --depth 1 origin "${{ inputs.zmk_sha }}" || exit 1
+            git checkout --detach "${{ inputs.zmk_sha }}" || exit 1
+            test "$(git rev-parse HEAD)" = "${{ inputs.zmk_sha }}" || exit 1
+            cd "${GITHUB_WORKSPACE}"
+          fi
+          git -C zmk rev-parse HEAD > "$artifact_dir/zmk-revision.txt"
           echo "::endgroup::"
 
           echo "::group::merge"

@@ -1,6 +1,6 @@
-# Corne 36-key — Miryoku Fast Base V2
+# Corne 36-key — Miryoku Fast Base V2.1
 
-This is an experimental **7-layer** replacement for the original generated Miryoku
+This is an USB-first **7-layer** replacement for the original generated Miryoku
 10-layer keymap. It is implemented in `config/corne.keymap` and is designed for the
 Corne 3x5+3 with a ZMK nice_nano@2.0.0//zmk central (left).
 
@@ -69,4 +69,24 @@ and clipboard functions. No sticky switch to the old layers is required.
 
 Source mapping and key count have been checked (42 shield bindings per layer,
 including 6 physically absent row-edge keys; 36 physical switches per layer).
-**GitHub Actions compilation and hardware behavior still need to be tested**.
+V2 functional tests passed for most layers; Mouse failed before pointing was enabled.
+**V2.1 compilation and hardware retesting are pending**.
+
+## V2.1 stabilization changes (USB-first)
+
+- The left/central only config `config/corne_left.conf` now enables `CONFIG_ZMK_POINTING=y`; the right/peripheral is unchanged.
+- No layer or thumb bindings changed versus V2. Mouse move/scroll/click must be retested after rebuilding.
+- `tools/validate_corne_v21.py` runs automatically in the reusable build workflow. It checks layer order/count, Corne 42 shield bindings per layer, 36 physical keys, thumb assignments, mouse, BLE, and pin controls.
+- The build workflow pins the ZMK repository to commit `4dd95d7840eb3d5a3f59bb29fbf1ab054715ef85` (upstream `main`, October 9, 2026), and saves the actual checkout SHA as `zmk-revision.txt` in the build artifact. This is a *new baseline* and may differ from your last working V2 build.
+- The `zmkfirmware/zmk-build-arm:stable` container image is not pinned to a digest, so this is not yet fully bit-for-bit reproducible.
+- USB is the primary tested host connection. Bluetooth lag when USB is removed is **not** addressed by this release. A new BLE profile/connection change is intentionally out of scope.
+- Enabling mouse emulation changes the HID mouse report descriptor. On Bluetooth, forget/re-pair the host if mouse does not appear. On USB, unplug/replug after flashing so the host re-enumerates.
+
+### Retest checklist
+
+1. Build **corne_left** and **corne_right** from `feature/miryoku-fast-base-v2.1-stabilization`. Confirm the static validator passes and inspect the artifact `zmk-revision.txt` for the pinned SHA.
+2. Flash `corne_left` only; keep the previously working right-half firmware. Confirm QWERTY, Nav, one-shot Ctrl/Shift, Num, Sym, Fun, Media and BLE Clear still work.
+3. Hold **left TAB** to enter Mouse. On the right: **J/K/L/'** = pointer left/down/up/right. The **right three thumb keys** are Enter-position = right-click, Backspace-position = left-click, Delete-position = middle-click. Mouse buttons are *not* on the alphabet row.
+4. Test scrolling in Mouse with **right M/,/./** positions on the bottom alphabet row (the source binds wheel left/down/up/right to M/,/./); these are independent of the right thumb clicks.
+5. If the mouse still fails over USB, check Windows Device Manager > Human Interface Devices for a USB mouse interface after unplug/replug. Do not install untrusted drivers.
+6. Do not mark V2.1 stable until tests are complete. To roll back, reflash the saved V2 corne_left UF2.

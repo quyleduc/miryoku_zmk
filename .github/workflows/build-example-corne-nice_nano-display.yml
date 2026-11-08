@@ -16,3 +16,4 @@ jobs:
       tap: '["qwerty"]'
       extra: '["qwerty"]'
       kconfig: '["CONFIG_ZMK_DISPLAY=y\nCONFIG_BT_CTLR_TX_PWR_PLUS_8=y"]'
+      zmk_sha: '4dd95d7840eb3d5a3f59bb29fbf1ab054715ef85'
