@@ -3,6 +3,12 @@ name: 'Build Corne 3x5 Optimized'
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - feature/corne-oled-dashboard-v1
+  pull_request:
+    branches:
+      - feature/miryoku-fast-base-v2
 
 jobs:
   build:
