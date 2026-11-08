@@ -86,7 +86,7 @@ V2 functional tests passed for most layers; Mouse failed before pointing was ena
 
 1. Build **corne_left** and **corne_right** from `feature/miryoku-fast-base-v2.1-stabilization`. Confirm the static validator passes and inspect the artifact `zmk-revision.txt` for the pinned SHA.
 2. Flash `corne_left` only; keep the previously working right-half firmware. Confirm QWERTY, Nav, one-shot Ctrl/Shift, Num, Sym, Fun, Media and BLE Clear still work.
-3. Hold **left TAB** to enter Mouse. On the right: **J/K/L/'** = left/down/up/right, **M/,/.** = mouse right/left/middle clicks respectively (mapping follows the physical right thumb buttons: Enter=right-click, Backspace=left-click, Delete=middle-click). For click buttons, use the **right three thumb keys**, not the alphabet row.
+3. Hold **left TAB** to enter Mouse. On the right: **J/K/L/'** = pointer left/down/up/right. The **right three thumb keys** are Enter-position = right-click, Backspace-position = left-click, Delete-position = middle-click. Mouse buttons are *not* on the alphabet row.
 4. Test scrolling in Mouse with **right M/,/./** positions on the bottom alphabet row (the source binds wheel left/down/up/right to M/,/./); these are independent of the right thumb clicks.
 5. If the mouse still fails over USB, check Windows Device Manager > Human Interface Devices for a USB mouse interface after unplug/replug. Do not install untrusted drivers.
 6. Do not mark V2.1 stable until tests are complete. To roll back, reflash the saved V2 corne_left UF2.
