@@ -6,9 +6,11 @@ on:
   push:
     branches:
       - feature/corne-oled-dashboard-v1
+      - feature/corne-oled-dashboard-v1.1-animations
   pull_request:
     branches:
       - feature/miryoku-fast-base-v2
+      - feature/corne-oled-dashboard-v1
 
 jobs:
   build:
