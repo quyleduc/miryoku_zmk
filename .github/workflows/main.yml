@@ -256,9 +256,9 @@ jobs:
           if [ -n "${{ inputs.zmk_sha }}" ]
           then
             cd "${GITHUB_WORKSPACE}/zmk"
-            git fetch --depth 1 origin "${{ inputs.zmk_sha }}"
-            git checkout --detach "${{ inputs.zmk_sha }}"
-            test "$(git rev-parse HEAD)" = "${{ inputs.zmk_sha }}"
+            git fetch --depth 1 origin "${{ inputs.zmk_sha }}" || exit 1
+            git checkout --detach "${{ inputs.zmk_sha }}" || exit 1
+            test "$(git rev-parse HEAD)" = "${{ inputs.zmk_sha }}" || exit 1
             cd "${GITHUB_WORKSPACE}"
           fi
           git -C zmk rev-parse HEAD > "$artifact_dir/zmk-revision.txt"
