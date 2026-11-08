@@ -26,6 +26,7 @@
 #if IS_ENABLED(CONFIG_ZMK_SPLIT_ROLE_CENTRAL)
 #include <zmk/endpoints.h>
 #include <zmk/events/endpoint_changed.h>
+#include <zmk/events/ble_active_profile_changed.h>
 #include <zmk/events/wpm_state_changed.h>
 #include <zmk/wpm.h>
 #else
@@ -149,6 +150,7 @@ static void update_transport(struct dashboard_transport_state state) {
 ZMK_DISPLAY_WIDGET_LISTENER(dash_anim_transport, struct dashboard_transport_state,
                             update_transport, get_transport)
 ZMK_SUBSCRIPTION(dash_anim_transport, zmk_endpoint_changed);
+ZMK_SUBSCRIPTION(dash_anim_transport, zmk_ble_active_profile_changed);
 
 struct dashboard_typing_state { bool active; };
 static struct dashboard_typing_state get_typing(const zmk_event_t *eh) {
