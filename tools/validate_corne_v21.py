@@ -28,7 +28,7 @@ def check(condition: bool, message: str) -> None:
 
 
 def binding_count(text: str) -> int:
-    return len(re.findall(r"&[A-Za-z_]\\w*", text))
+    return len(re.findall(r"&[A-Za-z_]\w*", text))
 
 
 def verify() -> None:
@@ -37,26 +37,26 @@ def verify() -> None:
     workflow = WORKFLOW.read_text(encoding="utf-8")
     main = MAIN.read_text(encoding="utf-8")
 
-    found = re.findall(r'^\\s*(base|nav|mouse|media|num|sym|fun|extra|tap|button)\\s*\\{\\s*$', source, re.M)
+    found = re.findall(r'^\s*(base|nav|mouse|media|num|sym|fun|extra|tap|button)\s*\{\s*$', source, re.M)
     check(found == EXPECTED_LAYERS, f"Expected seven layers in order {EXPECTED_LAYERS}; got {found}")
-    check("miryoku.dtsi" not in "\\n".join(
+    check("miryoku.dtsi" not in "\n".join(
         ln for ln in source.splitlines() if ln.lstrip().startswith("#include")
     ), "V2.1 must not include the legacy 10-layer Miryoku keymap")
     check("&u_mt" not in source, "Home row mod-tap must not be reintroduced on Fast Base")
 
     blocks = dict(re.findall(
-        r'^\\s*(base|nav|mouse|media|num|sym|fun)\\s*\\{(.*?)^\\s*\\};',
+        r'^\s*(base|nav|mouse|media|num|sym|fun)\s*\{(.*?)^\s*\};',
         source, re.M | re.S
     ))
     for name in EXPECTED_LAYERS:
         block = blocks.get(name, "")
-        rows = re.findall(r'/\\* Row [123] \\*/([^\\n]+)', block)
-        thumbs = re.findall(r'/\\* Thumbs \\*/([^\\n]+)', block)
+        rows = re.findall(r'/\* Row [123] \*/([^\n]+)', block)
+        thumbs = re.findall(r'/\* Thumbs \*/([^\n]+)', block)
         check(len(rows) == 3, f"{name}: expected exactly three matrix rows")
         check(len(thumbs) == 1, f"{name}: expected one thumb row")
         for idx, row in enumerate(rows):
             check(binding_count(row) == 12, f"{name} row {idx + 1}: expected 12 bindings")
-            bindings = re.findall(r"&[A-Za-z_]\\w*", row)
+            bindings = re.findall(r"&[A-Za-z_]\w*", row)
             check(bool(bindings) and bindings[0] == "&none" and bindings[-1] == "&none",
                   f"{name} row {idx + 1}: absent outer keys must be &none")
         if thumbs:
@@ -68,7 +68,7 @@ def verify() -> None:
     base = blocks.get("base", "")
     for binding in EXPECTED_THUMBS:
         check(binding in base, f"Base thumb mapping changed: {binding}")
-    check(binding_count(" ".join(re.findall(r'/\\* Row [123] \\*/([^\\n]+)', base))) == 36,
+    check(binding_count(" ".join(re.findall(r'/\* Row [123] \*/([^\n]+)', base))) == 36,
           "Base must have three rows of 12 shield bindings")
     check("BT_CLR" in blocks.get("media", ""), "BLE clear binding missing from Media")
     check(all(f"BT_SEL {idx}" in blocks.get("media", "") for idx in range(5)),
