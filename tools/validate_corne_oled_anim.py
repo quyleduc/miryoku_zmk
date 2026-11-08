@@ -106,6 +106,32 @@ def run():
 
     verify("corne_oled_animation_init(screen);" in screen,
            "Custom screen must initialize the sprite module")
+    # Branding is static on both roles: 34px Montserrat 8 at x=44.
+    # Keep the top row in order: output widget, name, 12px pulse, battery.
+    verify('#define CORNE_OLED_OWNER_NAME "LQE2HC"' in screen,
+           "Owner label must be LQE2HC")
+    verify("lv_label_set_text(label, CORNE_OLED_OWNER_NAME);" in screen and
+           "lv_obj_set_style_text_font(label, &lv_font_montserrat_8" in screen and
+           screen.count("place_owner_name(screen);") == 1,
+           "Owner label must be created once with 8px font")
+    name_x = re.search(r"#define CORNE_OLED_OWNER_X\s+(\d+)", screen)
+    pulse_x = re.search(
+        r"output_canvas = make_canvas\(screen, &output_buffer, (\d+), 3\);", anim
+    )
+    battery_x = re.search(
+        r"lv_obj_set_pos\(battery_label, (\d+), ROW_TOP \+ 3\);", screen
+    )
+    verify(name_x is not None and pulse_x is not None and battery_x is not None,
+           "Top row layout constants are missing")
+    if name_x and pulse_x and battery_x:
+        left, pulse, battery = map(int, (name_x.group(1), pulse_x.group(1),
+                                         battery_x.group(1)))
+        verify(left + 34 <= pulse and pulse + 12 <= battery and battery < 128,
+               "LQE2HC, USB pulse and battery areas must not overlap")
+    verify("CONFIG_ZMK_DISPLAY_INVERT" not in screen or
+           "CORNE_OLED_SWAP_MONO_PIXELS" in screen,
+           "Preserve OLED polarity")
+
     verify("src/animation.c" in cmake, "Animation source not linked")
     verify("validate_corne_v21.py" in work and
            "validate_corne_oled.py" in work and
