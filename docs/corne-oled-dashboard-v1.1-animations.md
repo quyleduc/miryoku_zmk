@@ -4,12 +4,22 @@
 (`feature/corne-oled-dashboard-v1`), which itself branches from
 Fast Base V2.1. The actual 7-layer keymap remains unchanged.
 
+## Personalization: LQE2HC
+
+- Both central and peripheral display the static name **LQE2HC** at x=44, y=4.
+- Font: LVGL Montserrat 8, ~34px text advance. It fits between
+  connection/output status and battery percentage on the 128×32 panel.
+- The animated USB/BLE sprite on the left is moved from (73,3) to (79,3);
+  its last column x=90 stays ahead of the battery widget starting at x=92.
+- No new display animation, input hook or timer is introduced by the name.
+- Static regression checks guard the precise name and spacing.
+
 ## SSD1306 128×32 pixel layout
 
 ```text
 LEFT / CENTRAL (illustrative)            RIGHT / PERIPHERAL (illustrative)
 +------------------------+                +------------------------+
-| L USB   [plug pulse] 100|                | R                   97%|
+| L USB LQE2HC [*] 100% |                | R   LQE2HC          97%|
 |                        |                |                        |
 | Base       [▏▍▎]  48WPM |                | SPLIT [wave] WiFi✓ cat|
 +------------------------+                +------------------------+
@@ -22,7 +32,7 @@ V1 status widgets still show layer, host output, battery, WPM and split link.
 
 | Half | Region (x,y), size | Effect | Behavior |
 | --- | --- | --- | --- |
-| Central | (73,3), 12×8 | USB/BLE activity | Small plug or Bluetooth symbol with an animated signal pixel; dash when no endpoint selected |
+| Central | (79,3), 12×8 | USB/BLE activity | Small plug or Bluetooth symbol with an animated signal pixel; dash when no endpoint selected |
 | Central | (89,23), 12×8 | Typing equalizer | Three bars move when measured WPM > 0; three quiet dots otherwise |
 | Peripheral | (50,20), 12×8 | Split connection wave | Wave pulses when the right-half BLE link is connected; static cross when disconnected |
 | Peripheral | (114,19), 12×12 | Tiny cat mascot | 1-bit original pixel cat blinks for one frame approximately every 4.2 seconds |
@@ -80,7 +90,7 @@ OLED polarity is preserved from the previously tested V1.
 
 ## Acceptance / performance budget
 
-- [ ] 4 sprites display with correct **physical dark background / white pixels**.
+- [ ] LQE2HC is fully legible on both halves, with no overlap of output/pulse/battery.\n- [ ] 4 sprites display with correct **physical dark background / white pixels**.
 - [ ] All text, symbols and pixels stay within 128×32.
 - [ ] WPM and link/transport events correctly drive the respective animations.
 - [ ] <=4 FPS, only local canvas invalidations; animation cancels in idle/sleep.
