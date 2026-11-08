@@ -27,6 +27,14 @@
 #define ROW_TOP 1
 #define ROW_BOTTOM 17
 
+/* Six-character personalization, rendered with the already-enabled 8px font.
+ * Fits between the output status and battery without truncation on 128x32.
+ * Actual Montserrat 8 text advance: approximately 34px.
+ */
+#define CORNE_OLED_OWNER_NAME "LQE2HC"
+#define CORNE_OLED_OWNER_X 44
+#define CORNE_OLED_OWNER_Y 4
+
 /* The photographed SSD1306 panel renders the previous logical black as
  * illuminated pixels. Swap logical monochrome colors as a board-local,
  * reversible workaround. If another OLED has normal polarity, set 0.
@@ -64,6 +72,15 @@ static void place_static(lv_obj_t *parent, const char *text, int16_t x, int16_t 
     place_label(label, x, y);
 }
 
+/* A static label costs no periodic redraw, timers, or key processing. */
+static void place_owner_name(lv_obj_t *screen) {
+    lv_obj_t *label = lv_label_create(screen);
+    lv_label_set_text(label, CORNE_OLED_OWNER_NAME);
+    lv_obj_set_style_text_font(label, &lv_font_montserrat_8, LV_PART_MAIN);
+    lv_obj_set_style_text_color(label, OLED_FG_COLOR, LV_PART_MAIN);
+    lv_obj_set_pos(label, CORNE_OLED_OWNER_X, CORNE_OLED_OWNER_Y);
+}
+
 lv_obj_t *zmk_display_status_screen(void) {
     lv_obj_t *screen = lv_obj_create(NULL);
     lv_obj_remove_style_all(screen);
@@ -77,6 +94,9 @@ lv_obj_t *zmk_display_status_screen(void) {
 #else
     place_static(screen, "R", 0, ROW_TOP);
 #endif
+
+    /* Same user label on central and peripheral; no split state required. */
+    place_owner_name(screen);
 
     zmk_widget_battery_status_init(&battery_widget, screen);
     /* Small battery font keeps charging icon + 100% inside 128px. */
