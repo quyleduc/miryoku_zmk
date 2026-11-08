@@ -63,7 +63,11 @@ lv_obj_t *zmk_display_status_screen(void) {
 #endif
 
     zmk_widget_battery_status_init(&battery_widget, screen);
-    place_label(zmk_widget_battery_status_obj(&battery_widget), 89, ROW_TOP);
+    /* Small battery font keeps charging icon + 100% inside 128px. */
+    lv_obj_t *battery_label = zmk_widget_battery_status_obj(&battery_widget);
+    lv_obj_set_style_text_font(battery_label, &lv_font_montserrat_8, LV_PART_MAIN);
+    lv_obj_set_style_text_color(battery_label, lv_color_white(), LV_PART_MAIN);
+    lv_obj_set_pos(battery_label, 92, ROW_TOP + 3);
 
 #if IS_ENABLED(CONFIG_ZMK_SPLIT_ROLE_CENTRAL)
     zmk_widget_output_status_init(&output_widget, screen);
