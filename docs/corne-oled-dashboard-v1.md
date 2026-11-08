@@ -98,3 +98,37 @@ but the `zmkfirmware/zmk-build-arm:stable` builder image is not digest-pinned.
 Flash the previously saved V2.1 `corne_left` and `corne_right` UF2
 artifacts. Do not merge this new branch before both displays and typing
 have passed actual hardware testing.
+
+
+## SSD1306 bright-background regression (photo on 2026-11-08)
+
+A hardware photo showed most pixels illuminated and the status glyphs appearing dark,
+despite the original Dashboard V1 source specifying a black background and white text.
+This points to a **monochrome color/pixel polarity mismatch**, not proof of OLED hardware failure.
+
+An experimental fix on this feature branch:
+- Explicitly enable `CONFIG_LV_USE_THEME_MONO=y` and
+  `CONFIG_ZMK_DISPLAY_INVERT=y` for both halves.
+- Swap the logical monochrome colors at the custom UI boundary with
+  `CORNE_OLED_SWAP_MONO_PIXELS=1` in `status_screen.c`.
+  The intended *physical* appearance is **dark background, light text**.
+- The workaround is reversible by setting `CORNE_OLED_SWAP_MONO_PIXELS=0`.
+  Leave the rest of the keymap/mouse configuration untouched.
+- Static regression test asserts the intended LCD polarity and both build configs.
+
+**Important:** A photograph cannot uniquely identify the inversion layer
+(SD1306 panel setting vs LVGL I1 palette vs theme), so the fix is a hypothesis
+until confirmed on both physical screens. Test both halves. If the display
+still has the wrong colors, investigate the devicetree SSD1306 `color-inversion`
+property or color palette, rather than repeatedly changing timing options.
+
+### Polarity acceptance test
+
+1. Build both halves from this branch; ensure both regression validators pass.
+2. Flash left and right, restart them and verify **unlit/dark background with
+   readable white pixels** on both OLEDs.
+3. Cycle all 7 layers and check no old pixels remain and text stays inside 128×32.
+4. Confirm no new key lag under USB, Mouse remains usable, and the split link
+   continues reconnecting.
+5. If still inverted, capture a close-up of each screen plus the build log
+   and avoid merging until it is understood.
