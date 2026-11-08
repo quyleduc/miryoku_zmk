@@ -56,6 +56,8 @@ def main() -> None:
                f"{side}: expected monochrome LVGL rendering")
         verify("CONFIG_LV_Z_MEM_POOL_SIZE=8192" in conf,
                f"{side}: expected bounded LVGL heap")
+        verify("CONFIG_LV_Z_VDB_SIZE=32" in conf,
+               f"{side}: expected small 128x32 LVGL I2C framebuffer")
 
     for flag in ["ZMK_POINTING", "ZMK_WIDGET_OUTPUT_STATUS",
                  "ZMK_WIDGET_LAYER_STATUS", "ZMK_WIDGET_WPM_STATUS"]:
