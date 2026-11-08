@@ -1,0 +1,3 @@
+name: corne_oled_dashboard
+build:
+  cmake: .

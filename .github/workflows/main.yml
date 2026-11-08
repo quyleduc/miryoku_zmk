@@ -83,6 +83,10 @@ jobs:
           then
             python3 "miryoku_zmk/tools/validate_corne_v21.py"
           fi
+          if [ -f "miryoku_zmk/tools/validate_corne_oled.py" ]
+          then
+            python3 "miryoku_zmk/tools/validate_corne_oled.py"
+          fi
       - name: main
         id: main
         run: |
@@ -305,6 +309,18 @@ jobs:
               fi
             fi
           done
+          # Include the version-controlled, local Corne OLED dashboard module.
+          # Preserve support for any explicitly requested external modules.
+          local_oled_module="${GITHUB_WORKSPACE}/miryoku_zmk/modules/corne_oled_dashboard"
+          if [ -f "$local_oled_module/zephyr/module.yml" ]
+          then
+            if [ -n "$module_dirs" ]
+            then
+              module_dirs="$module_dirs;$local_oled_module"
+            else
+              module_dirs="$local_oled_module"
+            fi
+          fi
           if [ -n "$module_dirs" ]
           then
             modules_arg="-DZMK_EXTRA_MODULES=\"$module_dirs\""
