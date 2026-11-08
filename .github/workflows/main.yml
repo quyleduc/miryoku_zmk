@@ -255,8 +255,7 @@ jobs:
             test "$(git rev-parse HEAD)" = "${{ inputs.zmk_sha }}"
             cd "${GITHUB_WORKSPACE}"
           fi
-          mkdir -p "${{ steps.main.outputs.artifact_dir }}"
-          git -C zmk rev-parse HEAD > "${{ steps.main.outputs.artifact_dir }}/zmk-revision.txt"
+          git -C zmk rev-parse HEAD > "$artifact_dir/zmk-revision.txt"
           echo "::endgroup::"
 
           echo "::group::merge"
