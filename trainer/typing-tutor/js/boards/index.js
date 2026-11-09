@@ -1,7 +1,10 @@
 // Board registry. Add future models here (Iris, Lily58, custom, …) and they
 // appear in the menu selector automatically.
 
-import { board as corneV4 } from './corne-v4.js';
+import { board as corneLqe } from './corne-lqe2hc.js';
+// Upstream Corne V4 remains in the source tree for attribution, but is not a
+// selectable profile: its QMK/Vial layers do not match the user's ZMK.
+
 
 /**
  * Playable boards only. When you add a new model:
@@ -10,9 +13,9 @@ import { board as corneV4 } from './corne-v4.js';
  *  3. Import and push it onto BOARDS below
  *  4. Extend scripts/check-layout.mjs if the matrix shape differs
  */
-export const BOARDS = [corneV4];
+export const BOARDS = [corneLqe];
 
-export const DEFAULT_BOARD_ID = 'corne-v4';
+export const DEFAULT_BOARD_ID = 'corne-lqe2hc';
 
 export function listBoards() {
   return BOARDS;
