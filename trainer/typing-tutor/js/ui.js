@@ -423,11 +423,11 @@ export function renderCheatSheet(board) {
   const name = document.getElementById('cheat-board-name');
   if (name) name.textContent = boardFullLabel(board);
   if (!host) return;
-  const layers = [
-    { n: 0, title: 'Layer 0 · base' },
-    { n: 1, title: 'Layer 1 · hold left Fn' },
-    { n: 2, title: 'Layer 2 · hold right Fn' },
-  ];
+  const layers = (board.LAYER_NAMES || ['Base', 'Numbers/Nav', 'Symbols']).map((title,n)=>({
+    n,
+    title: n === 0 ? `Layer ${n} · ${title}` :
+      `Layer ${n} · ${title} · ${board.HOLD_LABELS?.[n] || 'Hold Fn'}`,
+  }));
   host.innerHTML = layers.map(({ n, title }) => {
     const rows = [[], [], [], []];
     for (const k of board.KEYS) {
