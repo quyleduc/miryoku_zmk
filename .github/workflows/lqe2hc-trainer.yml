@@ -41,3 +41,9 @@ jobs:
       - name: Smoke-check ZMK source snapshot
         run: |
           cmp ../../config/corne.keymap ../config/corne.keymap
+      - name: Publish standalone website ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: lqe2hc-layer-tutor-site
+          path: trainer/typing-tutor/
+          if-no-files-found: error
