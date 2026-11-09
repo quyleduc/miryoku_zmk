@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { getBoard, DEFAULT_BOARD_ID } from '../js/boards/index.js';
-import { STAGES } from '../js/lqeLessons.js';
+import { STAGES, lqeContextualTip, lqeCoachFromMistakes } from '../js/lqeLessons.js';
 
 const board = getBoard(DEFAULT_BOARD_ID);
 const c = (ch) => board.charToKey(ch);
@@ -80,4 +80,13 @@ test('15 actionable stages and every stage character is mapped', () => {
       }
     }
   }
+});
+
+test('coaching reflects actual ZMK thumb holds and one-shot Shift', () => {
+  assert.match(lqeContextualTip('7',c),/RIGHT Backspace/);
+  assert.match(lqeContextualTip('{',c),/RIGHT Enter/);
+  assert.match(lqeContextualTip('←',c),/LEFT Space/);
+  assert.match(lqeContextualTip('A',c),/Space\/Nav.*P/);
+  assert.match(lqeCoachFromMistakes({'7':2},c),/RIGHT Backspace/);
+  assert.match(lqeCoachFromMistakes({'{':2},c),/RIGHT Enter/);
 });
