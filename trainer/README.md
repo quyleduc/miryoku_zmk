@@ -77,10 +77,14 @@ PWA cache integrity and a source snapshot comparison.
 ## Deploy
 
 A **manual** GitHub Pages workflow is provided under
-`.github/workflows/lqe2hc-pages.yml`. Enable GitHub Pages with
-**GitHub Actions** as the source if Pages is not yet configured. Trigger
-the workflow yourself: deployment would replace the Pages site for this
-repository, so do not run it if the repo already hosts an unrelated site.
+`.github/workflows/lqe2hc-pages.yml`. GitHub exposes `workflow_dispatch`
+for workflows present on the **default branch**. This feature branch and its
+PR currently target `feature/miryoku-fast-base-v2`; the Pages workflow
+will need to reach the repository default branch before its manual Run button
+is available. Enable GitHub Pages with **GitHub Actions** as the source,
+then trigger it explicitly if you want public hosting.
+Deployment would replace the Pages site for this repository, so do not run
+it if the repo already hosts an unrelated site.
 
 The expected site URL after a successful GitHub Pages deployment is
 `https://quyleduc.github.io/miryoku_zmk/`; this URL is **not claimed
