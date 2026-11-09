@@ -1,12 +1,11 @@
 {
-  "name": "layer-tutor",
+  "name": "lqe2hc-layer-tutor",
   "private": true,
   "type": "module",
-  "description": "Typing tutor for a layered QMK split keyboard",
+  "description": "36-key ZMK Corne Fast Base typing trainer, based on MIT Layer Tutor",
   "scripts": {
     "test": "node --test tests/*.test.js",
-    "test:layout": "node ../scripts/check-layout.mjs",
-    "serve": "python3 -m http.server 8000",
-    "deploy": "bash ../scripts/deploy-pages.sh"
+    "test:layout": "node tests/lqe2hc-layout.test.js",
+    "serve": "python3 -m http.server 8000"
   }
 }
