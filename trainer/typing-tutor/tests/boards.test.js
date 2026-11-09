@@ -10,19 +10,19 @@ import {
 } from '../js/boards/index.js';
 import { PRIMARY_BOARD, KEYS, charToKey } from '../js/keyboardLayout.js';
 
-test('default / primary board is Corne V4', () => {
-  assert.equal(DEFAULT_BOARD_ID, 'corne-v4');
-  assert.equal(PRIMARY_BOARD.id, 'corne-v4');
-  assert.match(PRIMARY_BOARD.productName, /CORNE V4/i);
-  assert.match(PRIMARY_BOARD.formFactor, /3×6|3x6/i);
-  assert.match(PRIMARY_BOARD.formFactor, /ortho/i);
+test('default selected board is LQE2HC Fast Base 36', () => {
+  assert.equal(DEFAULT_BOARD_ID, 'corne-lqe2hc');
+  const board = getBoard(DEFAULT_BOARD_ID);
+  assert.equal(board.KEYS.length, 36);
+  assert.match(board.productName, /LQE2HC/i);
+  assert.match(board.formFactor, /3×5\+3/);
 });
 
 test('board labels include product identity for sharing', () => {
-  const b = getBoard('corne-v4');
-  assert.match(boardLabel(b), /Corne V4/);
-  assert.match(boardFullLabel(b), /CORNE V4 Wired Split Mechanical Keyboard/);
-  assert.match(boardFullLabel(b), /40%/);
+  const b = getBoard('corne-lqe2hc');
+  assert.match(boardLabel(b), /Corne LQE2HC/);
+  assert.match(boardFullLabel(b), /ZMK Fast Base/);
+  assert.match(boardFullLabel(b), /36 keys/);
 });
 
 test('registry has at least the Corne and all playable boards resolve', () => {
