@@ -1,0 +1,103 @@
+// Real LQE2HC 3x5+3 curriculum. Playable tokens use only characters
+// emitted by Fast Base; no claim to sense physical thumb-holds in the browser.
+export const TRACK_META={
+ base:{title:"01 · Base QWERTY + Telex",order:0},
+ num:{title:"02 · Hold BACKSPACE → Num",order:1},
+ sym:{title:"03 · Hold ENTER → Sym",order:2},
+ nav:{title:"04 · Hold SPACE → Nav",order:3},
+ shift:{title:"05 · One-shot Shift via Nav",order:4},
+ code:{title:"06 · C / Python / Mixed",order:5},
+};
+const stage=(id,name,track,layerHint,coachTip,pool,roundSize=14)=>({
+ id,name,track,layerHint,coachTip,pool,roundSize,preferBoard:true
+});
+export const STAGES=[
+ stage("lqe-home","Home Row","base",
+   "Base · A S D F / H J K L",
+   "No HRM on Fast Base: touch the letters directly. Correct position first, speed later.",
+   ["asdf","fdsa","jkl","sad","dad","hall","fall","ask","glass","flags"]),
+ stage("lqe-base","Full QWERTY","base",
+   "Base · all 30 letter/punctuation keys",
+   "Return to home after every reach. G/H belong to the inner index fingers.",
+   ["quwerty","asdfgh","zxcvbn","yuiop","hjkl","nm,./","hello world","quick brown fox"]),
+ stage("lqe-telex","Vietnamese Telex (ASCII)","base",
+   "Base · Telex keystrokes before IME composition",
+   "Practice key sequences such as tooi/chuowng first. Switch off the IME during symbol lessons.",
+   ["xin chao","cam on","tooi yeu viet nam","chuc mung","chuowng trinh","ddaay laf baif taap","tieengs vieetj","hoom nay"]),
+ stage("lqe-num","Numpad digits 0–9","num",
+   "Hold RIGHT BACKSPACE / Num → digits on LEFT",
+   "Example: 7 = hold Backspace + W, 0 = hold Backspace + left SPACE position.",
+   ["123","789","456","0123","987654","2026","1234567890","357159","0042"]),
+ stage("lqe-num-punct","Brackets, Equals, Slash","num",
+   "Hold RIGHT BACKSPACE / Num → [ ] ; = \\ and backtick",
+   "Num is NOT the left thumb: keep the RIGHT Backspace held.",
+   ["[10]","a[3]","x=4;","x[12]=5;","value=0;","\\","[7]","a=b;"]),
+ stage("lqe-sym-basic","C Operators / Braces","sym",
+   "Hold RIGHT ENTER / Sym → symbols on LEFT",
+   "Example: { = hold Enter + Q, & = hold Enter + W, } = hold Enter + T.",
+   ["{}","()","&&","||","**","->","!=0","a+b","(x)","{a}"]),
+ stage("lqe-sym-advanced","Hashes, Bitwise, Scope","sym",
+   "Hold RIGHT ENTER / Sym → # ~ ^ % @ $ : +",
+   "Symbols are direct on this layer: no extra Shift needed.",
+   ["#define","a|b","a&b","x^y","~x","0%2","a:b","@@","a+b","$x"]),
+ stage("lqe-nav-arrows","Arrow Navigation","nav",
+   "Hold LEFT SPACE / Nav → RIGHT J/K/L/'",
+   "J=left, K=down, L=up, quote=right. Browser detects resulting arrow codes.",
+   ["←↓↑→","←←→→","↑↑↓↓","←↓→↑","→→←","↓↑↓↑"]),
+ stage("lqe-nav-trails","Navigation sequences","nav",
+   "Hold LEFT SPACE / Nav across multiple arrow presses",
+   "Train sustained hold without releasing Space between arrow events.",
+   ["←←←","→↑←↓","↓→↓←","↑↑←←","→→→↓"]),
+ stage("lqe-shift","One-shot Shift","shift",
+   "Hold LEFT SPACE / Nav, tap RIGHT P, release, then type letter",
+   "LQE2HC has no Base Shift key. A = Space+P (one-shot Shift), then A.",
+   ["ABC","Hello","Fast Base","ZMK","Corne","NVMe","UART","RxTx","I2C"]),
+ stage("lqe-c-core","Embedded C Statements","code",
+   "Base ↔ Num ↔ Sym · practical punctuation",
+   "Focus on braces and semicolons; this is real emitted keyboard text, not a macro.",
+   ["int x=0;","if(x){x=1;}","for(i=0;i<10;i++){}","a[3]=7;","uint32_t x=0;","x=(a&b)|c;"]),
+ stage("lqe-c-bitwise","Bitwise and Register Access","code",
+   "Sym # & | ^ ~, Num digits, Base letters",
+   "Useful embedded C fragments without host shortcuts.",
+   ["value|=1;","reg&=~mask;","x^=mask;","#define X 1","if((a&b)==0){}","u32 x=0;"]),
+ stage("lqe-python","Python Syntax","code",
+   "Sym : ( ) and Num digits with Base letters",
+   "Keep RIGHT Enter/Sym held for colons, then release for letters.",
+   ["def f(x):","for i in range(3):","if x==0:","print(x)","x=[1,2,3]","return x+1"]),
+ stage("lqe-mixed","Layer Transitions","code",
+   "Rapid Base ↔ Num ↔ Sym shifts",
+   "Read the amber thumb and green target on each character.",
+   ["a[0]={1};","if(x>3):","return x+1;","arr[2]=x;","x=(a+b)*2;"]),
+ stage("lqe-mastery","Code and Text Mastery","code",
+   "Full Fast Base · English, Telex, C/Python",
+   "Aim for 90% accuracy before pushing WPM.",
+   ["hello world","int value=0;","if(x){return x;}","xin chao","for i in range(5):","arr[10]={0};"]),
+];
+
+/** Physical coaching aligned with the ZMK Fast Base V2.1 (not upstream QMK). */
+export function lqeContextualTip(ch, charToKey, fallback = '') {
+  const m = ch == null ? null : charToKey(ch);
+  if (!m) return fallback;
+  if (m.shift) {
+    return 'Hold LEFT Space/Nav + tap RIGHT P (one-shot Shift), release; then press the GREEN key.';
+  }
+  const name = {1:'LEFT Space / Nav',2:'LEFT Tab / Mouse',3:'LEFT Esc / Media',
+                4:'RIGHT Backspace / Num',5:'RIGHT Enter / Sym',
+                6:'RIGHT Delete / Fun'}[m.layer];
+  if (name) return `Hold ${name}, then press the GREEN key for “${ch}”.`;
+  if (ch === ' ') return 'Tap LEFT Space thumb (do not hold).';
+  return fallback || 'Press the GREEN key on Base.';
+}
+
+export function lqeCoachFromMistakes(mistakes, charToKey) {
+  const sorted = Object.entries(mistakes || {}).sort((a,b)=>b[1]-a[1]);
+  if (!sorted.length) return 'Clean run. Keep your eyes on the prompt.';
+  const [ch,count]=sorted[0];
+  const target=charToKey(ch);
+  if (target?.shift) return `One-shot Shift was slow for “${ch}” (×${count}); use Space+P, release, then letter.`;
+  const layer = target?.layer;
+  if (layer===4) return `Num hesitation on “${ch}” (×${count}). Hold RIGHT Backspace.`;
+  if (layer===5) return `Sym hesitation on “${ch}” (×${count}). Hold RIGHT Enter.`;
+  if (layer===1) return `Nav hesitation on “${ch}” (×${count}). Hold LEFT Space.`;
+  return `Practice “${ch}” (×${count}) slowly, then increase WPM.`;
+}
