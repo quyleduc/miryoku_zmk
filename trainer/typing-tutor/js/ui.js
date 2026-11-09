@@ -1,6 +1,7 @@
 // Screen rendering. DOM-only; owns no game state.
 
-import { STAGES, TRACK_META, FLUENT_WPM, PASS_ACCURACY, todaysFocus } from './lessons.js';
+import { FLUENT_WPM, PASS_ACCURACY, todaysFocus } from './lessons.js';
+import { STAGES, TRACK_META } from './lqeLessons.js';
 import { boardFullLabel, boardLabel } from './boards/index.js';
 import { setAmbientForScreen } from './canvasEffects.js';
 
