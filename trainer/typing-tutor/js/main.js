@@ -2,10 +2,13 @@
 
 import {
   buildRound, practiceRoundSize, PASS_ACCURACY,
-  buildWeakKeyRound, buildCustomRound, contextualTip, coachFromMistakes,
+  buildWeakKeyRound, buildCustomRound,
   summarizeRunMetrics,
 } from './lessons.js';
-import { STAGES } from './lqeLessons.js';
+import {
+  STAGES, lqeContextualTip as contextualTip,
+  lqeCoachFromMistakes as coachFromMistakes,
+} from './lqeLessons.js';
 import {
   getBoard, listPlayableBoards, DEFAULT_BOARD_ID, boardFullLabel,
 } from './boards/index.js';
