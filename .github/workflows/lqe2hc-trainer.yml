@@ -1,0 +1,43 @@
+name: LQE2HC Layer Tutor
+on:
+  push:
+    branches:
+      - feature/lqe2hc-layer-tutor
+  pull_request:
+    branches:
+      - feature/miryoku-fast-base-v2
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: trainer/typing-tutor
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Validate JavaScript syntax
+        run: |
+          find js tests -name '*.js' -print0 | xargs -0 -n1 node --check
+      - name: Regression tests (upstream + LQE2HC)
+        run: node --test tests/*.test.js
+      - name: Check PWA offline asset integrity
+        run: |
+          node --input-type=module <<'JS'
+          import fs from 'node:fs';
+          const sw = fs.readFileSync('sw.js','utf8');
+          const entries=[...sw.matchAll(/'\.\/([^']+)'/g)].map(x=>x[1]);
+          for (const p of entries) {
+            if(!fs.existsSync(p)) throw new Error('Offline asset missing: '+p);
+          }
+          console.log('PASS: '+entries.length+' cached files exist');
+          JS
+      - name: Smoke-check ZMK source snapshot
+        run: |
+          cmp ../../config/corne.keymap ../config/corne.keymap
