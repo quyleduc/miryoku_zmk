@@ -20,7 +20,7 @@
 //   }
 // }
 
-export const STORE_KEY = 'qmk-typing-tutor-v1';
+export const STORE_KEY = 'lqe2hc-layer-tutor-v1';
 const LEGACY_SOUND_KEY = 'qmk-typing-tutor-sound';
 export const SCHEMA_VERSION = 4;
 export const PASS_ACCURACY = 90;
