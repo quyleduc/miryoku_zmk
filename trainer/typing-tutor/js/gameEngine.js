@@ -1,0 +1,101 @@
+// Pure typing state machine. No DOM, no timers — callers pass timestamps in.
+//
+// WPM timing starts on the first *correct* keystroke so early fumbles do not
+// zero out the clock before the learner has begun the line. Errors before
+// that still count toward accuracy and the mistake map.
+
+export function createGame(items, now = null) {
+  return {
+    items,
+    itemIndex: 0,
+    cursor: 0,
+    correct: 0,
+    errors: 0,
+    startTime: null,
+    endTime: null,
+    mistakes: {},
+    keyMetrics: {},
+    events: [],
+    targetStartedAt: Number.isFinite(now) ? now : null,
+    previousCorrectChar: null,
+    currentTargetErrors: 0,
+    done: false,
+  };
+}
+
+export function currentItem(game) {
+  return game.done ? null : game.items[game.itemIndex];
+}
+
+export function currentChar(game) {
+  const item = currentItem(game);
+  return item ? item[game.cursor] : null;
+}
+
+export function handleKey(game, ch, now) {
+  if (game.done) return 'ignored';
+  const target = currentChar(game);
+  const metric = game.keyMetrics[target] ?? {
+    attempts: 0, correct: 0, errors: 0, totalLatencyMs: 0, samples: 0,
+  };
+  metric.attempts += 1;
+  game.keyMetrics[target] = metric;
+  if (ch === target) {
+    if (game.startTime === null) game.startTime = now;
+    game.correct += 1;
+    metric.correct += 1;
+    const latencyMs = game.targetStartedAt == null
+      ? 0
+      : Math.max(0, now - game.targetStartedAt);
+    metric.totalLatencyMs += latencyMs;
+    metric.samples += 1;
+    game.events.push({
+      ch: target,
+      previousCh: game.previousCorrectChar,
+      latencyMs,
+      errors: game.currentTargetErrors,
+    });
+    game.previousCorrectChar = target;
+    game.currentTargetErrors = 0;
+    game.cursor += 1;
+    if (game.cursor >= game.items[game.itemIndex].length) {
+      game.itemIndex += 1;
+      game.cursor = 0;
+      if (game.itemIndex >= game.items.length) {
+        game.done = true;
+        game.endTime = now;
+        return 'done';
+      }
+    }
+    game.targetStartedAt = now;
+    return 'correct';
+  }
+  // Wrong key: count error even before the WPM clock starts.
+  game.errors += 1;
+  metric.errors += 1;
+  game.currentTargetErrors += 1;
+  game.mistakes[target] = (game.mistakes[target] ?? 0) + 1;
+  game.lastWrong = ch;
+  return 'error';
+}
+
+/** Total characters remaining including current item (for progress bar). */
+export function progressCounts(game) {
+  let total = 0;
+  let done = 0;
+  for (let i = 0; i < game.items.length; i++) {
+    total += game.items[i].length;
+    if (i < game.itemIndex) done += game.items[i].length;
+    else if (i === game.itemIndex) done += game.cursor;
+  }
+  return { done, total, frac: total > 0 ? done / total : 0 };
+}
+
+export function stats(game, now = Date.now()) {
+  const end = game.endTime ?? now;
+  const elapsedMin = game.startTime === null ? 0 : (end - game.startTime) / 60000;
+  const wpm = elapsedMin > 0 ? game.correct / 5 / elapsedMin : 0;
+  const total = game.correct + game.errors;
+  const accuracy = total > 0 ? (game.correct / total) * 100 : 100;
+  return { wpm: Math.round(wpm), accuracy: Math.round(accuracy * 10) / 10 };
+}
