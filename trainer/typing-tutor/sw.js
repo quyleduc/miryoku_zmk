@@ -1,7 +1,7 @@
 // Offline support: network-first with cache fallback, so updates land
 // immediately when online and the app still works with no connection.
 // Bump CACHE when shipping a release so activate() drops the old bucket.
-const CACHE = 'layer-tutor-v14';
+const CACHE = 'lqe2hc-layer-tutor-v1';
 const ASSETS = [
   './',
   './index.html',
@@ -20,10 +20,10 @@ const ASSETS = [
   './js/sound.js',
   './js/boards/index.js',
   './js/boards/corne-v4.js',
+  './js/boards/corne-lqe2hc.js',
+  './js/lqeLessons.js',
   './js/boards/buildLayout.js',
   './icons/icon.svg',
-  './icons/icon-192.png',
-  './icons/icon-512.png',
 ];
 
 self.addEventListener('install', (e) => {
