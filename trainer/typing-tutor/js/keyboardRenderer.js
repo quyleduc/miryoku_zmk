@@ -14,6 +14,22 @@ const KEY_GAP = 0.35;
 const CO = [0.55, 0.40, 0.12, 0, 0.15, 0.28, 0.65];
 const PAD = 0.30;
 
+// Corne 3x5+3 geometry (the upstream Corne V4 geometry is 3x6).
+const COMPACT_CO = [0.45, 0.24, 0.08, 0.00, 0.25];
+const COMPACT_THUMB_L = {
+  L30: {x:1.85,y:3.25,w:1,h:1,r:7},
+  L31: {x:2.95,y:3.43,w:1,h:1,r:13},
+  L32: {x:4.00,y:3.21,w:1,h:1,r:20},
+};
+const COMPACT_THUMB_MIRROR = {R30:"L32",R31:"L31",R32:"L30"};
+const COMPACT_CASE = [
+  [-0.30,0.14],[1,0.14],[1,-0.06],[2,-0.06],[2,-0.22],
+  [3,-0.22],[3,-0.30],[4,-0.30],[4,-0.05],[5.30,-0.05],
+  [5.30,3.75],[5.25,4.65],[4.30,4.75],[2.0,4.75],[-0.30,3.75],
+];
+const COMPACT_WIDTH = 5.60;
+const COMPACT_HEIGHT = 5.10;
+
 const THUMB_GEOM_L = {
   L33: { x: 3.45, y: 3.30, w: 1, h: 1, r: 6 },
   L34: { x: 4.58, y: 3.46, w: 1, h: 1, r: 14 },
@@ -26,7 +42,17 @@ function visualColOf(key) {
   return key.col;
 }
 
-function geomFor(key) {
+function geomFor(key, compact = false) {
+  if(compact) {
+    if(key.row===3) {
+      const shape = COMPACT_THUMB_L[key.id] ?? COMPACT_THUMB_L[COMPACT_THUMB_MIRROR[key.id]];
+      if(!shape) throw new Error("Missing compact thumb geometry for " + key.id);
+      return key.half==="L" ? shape :
+        {x:5-shape.x-shape.w,y:shape.y,w:shape.w,h:shape.h,r:-shape.r};
+    }
+    const col = key.col;
+    return {x:col,y:COMPACT_CO[key.half==="L"?col:4-col]+key.row,w:1,h:1,r:0};
+  }
   if (key.row === 3) {
     const left = THUMB_GEOM_L[key.id] ?? THUMB_GEOM_L[THUMB_MIRROR[key.id]];
     if (key.half === 'L') return left;
@@ -84,15 +110,15 @@ function roundedPath(pts, radius) {
   return `${d}Z`;
 }
 
-function caseSvg(half) {
-  const pts = CASE_L.map(([x, y]) => {
-    const px = half === 'L' ? x : 7 - x;
-    return [(px - MIN_X) * 100, (y - MIN_Y) * 100];
+function caseSvg(half, compact = false) {
+  const pts = (compact ? COMPACT_CASE : CASE_L).map(([x,y]) => {
+    const px = half === 'L' ? x : (compact ? 5 : 7)-x;
+    return [(px - MIN_X)*100,(y-MIN_Y)*100];
   });
   const gradId = `kb-case-grad-${half}`;
   const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
   svg.setAttribute('class', 'kb-case');
-  svg.setAttribute('viewBox', `0 0 ${WIDTH_U * 100} ${HEIGHT_U * 100}`);
+  svg.setAttribute('viewBox', `0 0 ${(compact ? COMPACT_WIDTH : WIDTH_U) * 100} ${(compact ? COMPACT_HEIGHT : HEIGHT_U) * 100}`);
   svg.setAttribute('aria-hidden', 'true');
   svg.innerHTML = `
     <defs>
@@ -134,6 +160,7 @@ function glowFor(key, geom) {
 export function renderKeyboard(container, board = PRIMARY_BOARD) {
   const KEYS = board.KEYS;
   const LAYER_HOLD = board.LAYER_HOLD;
+  const compact = board.geometry === "corne-3x5";
   const shiftKeysFor = board.shiftKeysFor.bind(board);
 
   const keyEls = new Map();
@@ -149,12 +176,12 @@ export function renderKeyboard(container, board = PRIMARY_BOARD) {
     const halfEl = document.createElement('div');
     halfEl.className = `kb-half kb-half-${half}`;
     halfEl.dataset.half = half;
-    halfEl.style.width = `${(WIDTH_U * U).toFixed(2)}rem`;
-    halfEl.style.height = `${(HEIGHT_U * U).toFixed(2)}rem`;
-    halfEl.appendChild(caseSvg(half));
+    halfEl.style.width = `${((compact ? COMPACT_WIDTH : WIDTH_U) * U).toFixed(2)}rem`;
+    halfEl.style.height = `${((compact ? COMPACT_HEIGHT : HEIGHT_U) * U).toFixed(2)}rem`;
+    halfEl.appendChild(caseSvg(half,compact));
 
     for (const key of KEYS.filter((k) => k.half === half)) {
-      const g = geomFor(key);
+      const g = geomFor(key,compact);
       const el = document.createElement('div');
       el.className = 'kb-key';
       el.dataset.keyId = key.id;
@@ -257,18 +284,29 @@ export function renderKeyboard(container, board = PRIMARY_BOARD) {
         holdEl.closest('.kb-half')?.classList.add('kb-needed-half');
         const badge = holdEl.querySelector('.kb-badge');
         badge.hidden = false;
-        badge.textContent = target.layer === 1 ? 'HOLD L-FN' : 'HOLD R-FN';
+        badge.textContent = board.HOLD_LABELS?.[target.layer] || (target.layer === 1 ? 'HOLD L-FN' : 'HOLD R-FN');
       }
     }
     if (target.shift) {
-      for (const id of board.SHIFT_KEYS ?? shiftKeysFor(target)) {
+      // On LQE2HC, uppercase letters use ONE-SHOT SHIFT: hold Space/Nav,
+      // tap physical P, release, then type the highlighted letter.
+      if(board.SHIFT_HOLD_ID) {
+        const holdEl = keyEls.get(board.SHIFT_HOLD_ID);
+        if(holdEl) {
+          holdEl.classList.add('kb-hold');
+          const badge=holdEl.querySelector('.kb-badge');
+          badge.hidden=false;
+          badge.textContent='HOLD NAV';
+        }
+      }
+      for (const id of (board.SHIFT_HOLD_ID ? shiftKeysFor(target) : (board.SHIFT_KEYS ?? shiftKeysFor(target)))) {
         const shiftEl = keyEls.get(id);
         if (shiftEl) {
           shiftEl.classList.add('kb-shift');
           shiftEl.closest('.kb-half')?.classList.add('kb-needed-half');
           const badge = shiftEl.querySelector('.kb-badge');
           badge.hidden = false;
-          badge.textContent = 'SHIFT';
+          badge.textContent = board.SHIFT_HOLD_ID ? 'TAP OS SHIFT' : 'SHIFT';
         }
       }
     }
@@ -321,7 +359,7 @@ export function renderKeyboard(container, board = PRIMARY_BOARD) {
       if (!n) continue;
       // Find key whose any single-char legend matches
       for (const key of KEYS) {
-        for (const layer of [0, 1, 2]) {
+        for (const layer of Object.keys(key.legends).map(Number)) {
           const leg = key.legends[layer];
           if (!leg) continue;
           const match = layer === 0 ? leg.toLowerCase() === ch || leg === ch : leg === ch;
