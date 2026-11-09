@@ -73,3 +73,31 @@ export const STAGES=[
    "Aim for 90% accuracy before pushing WPM.",
    ["hello world","int value=0;","if(x){return x;}","xin chao","for i in range(5):","arr[10]={0};"]),
 ];
+
+/** Physical coaching aligned with the ZMK Fast Base V2.1 (not upstream QMK). */
+export function lqeContextualTip(ch, charToKey, fallback = '') {
+  const m = ch == null ? null : charToKey(ch);
+  if (!m) return fallback;
+  if (m.shift) {
+    return 'Hold LEFT Space/Nav + tap RIGHT P (one-shot Shift), release; then press the GREEN key.';
+  }
+  const name = {1:'LEFT Space / Nav',2:'LEFT Tab / Mouse',3:'LEFT Esc / Media',
+                4:'RIGHT Backspace / Num',5:'RIGHT Enter / Sym',
+                6:'RIGHT Delete / Fun'}[m.layer];
+  if (name) return `Hold ${name}, then press the GREEN key for “${ch}”.`;
+  if (ch === ' ') return 'Tap LEFT Space thumb (do not hold).';
+  return fallback || 'Press the GREEN key on Base.';
+}
+
+export function lqeCoachFromMistakes(mistakes, charToKey) {
+  const sorted = Object.entries(mistakes || {}).sort((a,b)=>b[1]-a[1]);
+  if (!sorted.length) return 'Clean run. Keep your eyes on the prompt.';
+  const [ch,count]=sorted[0];
+  const target=charToKey(ch);
+  if (target?.shift) return `One-shot Shift was slow for “${ch}” (×${count}); use Space+P, release, then letter.`;
+  const layer = target?.layer;
+  if (layer===4) return `Num hesitation on “${ch}” (×${count}). Hold RIGHT Backspace.`;
+  if (layer===5) return `Sym hesitation on “${ch}” (×${count}). Hold RIGHT Enter.`;
+  if (layer===1) return `Nav hesitation on “${ch}” (×${count}). Hold LEFT Space.`;
+  return `Practice “${ch}” (×${count}) slowly, then increase WPM.`;
+}
