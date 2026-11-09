@@ -1,10 +1,11 @@
 // App bootstrap and game orchestration.
 
 import {
-  STAGES, buildRound, practiceRoundSize, PASS_ACCURACY,
+  buildRound, practiceRoundSize, PASS_ACCURACY,
   buildWeakKeyRound, buildCustomRound, contextualTip, coachFromMistakes,
   summarizeRunMetrics,
 } from './lessons.js';
+import { STAGES } from './lqeLessons.js';
 import {
   getBoard, listPlayableBoards, DEFAULT_BOARD_ID, boardFullLabel,
 } from './boards/index.js';
